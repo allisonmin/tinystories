@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title><%= title %></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+  		<script src="/javascripts/forms.js"></script>
+		<link rel='stylesheet' href='/stylesheets/style.css' />
+	</head>
+
+	<body>
+		<div id='response'></div>
+		<h4>Create</h4>
+		<form id='f1'>
+			<input id='title' type='text' name='title' placeholder='Title'><br>
+			<input id='author' type='text' name='author' placeholder='Author'><br>
+			<textarea id='line' name='line' rows='4' cols='40' placeholder='Upon upon a time...'></textarea><br>
+			<input type='submit' value='+Add Story'>
+		</form>
+
+		<h4>Read</h4>
+		<form id='f2'>
+			<input id='title' type='text' name='title' placeholder='Title'>
+			<input type='submit' value='Search'>
+		</form>
+
+		<h4>Update</h4>
+		<form id='f3'>
+			<input id='title' type='text' name='title' placeholder='Title'><br>
+			<input id='author' type='text' name='author' placeholder='Author'><br>
+			<textarea id='line' name='line' rows='4' cols='40' placeholder='Add another line to the story'></textarea><br>
+			<input type='submit' value='+Add Line'>
+		</form>
+
+		<h4>Delete</h4>
+		<form id='f4'>
+			<input id='title' type='text' name='title' placeholder='Title'>
+			<input type='submit' value='Delete'>
+		</form>
+
+		<h4>Create Author</h4>
+		<form id='f5'>
+			<input id='username' type='text' name='username' placeholder='username'><br>
+			<input id='password' type='text' name='password' placeholder='password'><br>
+			<input type='submit' value='Create'>
+		</form>
+	</body>
+</html>

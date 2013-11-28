@@ -1,0 +1,223 @@
+body {
+  	margin: 0px 0px 100px;
+  	max-width: 100%;
+  	height: 100%;
+  	background-image:url('../pw_pattern/pw_pattern.png');
+	background-repeat:repeat;
+  	font: 14px "Gotham Light", Helvetica, Arial, sans-serif;
+}
+
+#decor {
+	width: 100%;
+	padding: 0.5px 0px;
+	background: #40A5AF;
+}
+
+header {
+	text-align: center;
+	width: 100%;
+	padding: 15px;
+	background: #81BDB5;
+	margin-bottom: 10px;
+	font-size: 150%;
+}
+
+.logotext {
+	text-decoration: none;
+	color: white;
+}
+
+#logotext:hover,
+#logotext:focus {
+	color: #529d93;
+}
+
+footer {
+	position: absolute;
+	height: 100px;
+	text-align: center;
+	width: 100%;
+	padding: 20px;
+	background: #58585B;
+	margin-top: 10px;
+	color: white;
+}
+
+a {
+	text-decoration: none;
+	color: white;
+}
+
+/* Button Class */
+.button {
+	margin-top: 10px;
+	margin-right: 10px;
+	padding: 14px 26px;
+	font-size: 14px;
+	line-height: 100%;
+	text-shadow: 0 1px rgba(0, 0, 0, 0.4);
+	color: #fff;
+	display:inline-block;
+	vertical-align: middle;
+	text-align: center;
+	cursor: pointer;
+	font-weight: bold;
+	transition: background 0.1s ease-in-out;
+	-webkit-transition: background 0.1s ease-in-out;
+	-moz-transition: background 0.1s ease-in-out;
+	-ms-transition: background 0.1s ease-in-out;
+	-o-transition: background 0.1s ease-in-out;
+	text-shadow: 0 1px rgba(0, 0, 0, 0.3);
+	color: #fff;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	font-family: 'Gotham Light', Helvetica, sans-serif;
+}
+
+.button:active {
+	padding-top: 15px;
+	margin-bottom: -1px;
+}
+
+.button, .button:hover, .button:active {
+	outline: 0 none;
+	text-decoration: none;
+	color: #fff;
+}
+
+.add-story {
+	background-color: #fdc058;
+	box-shadow: 0px 3px 0px 0px #e29003;
+}
+
+.add-story:hover {
+	background-color: #fdb53a;
+}
+
+.add-story:active {
+	box-shadow: 0px 3px 0px 0px #e29003;
+}
+/* End of Button class */
+
+#active-stories,
+#bookshelf,
+#create-story,
+#flickr,
+#flickr-search,
+#login-box {
+	padding: 20px 0px;
+	text-align: center;
+}
+
+#gallery li {
+	display: inline-block;
+	margin-right: 3px;
+	margin-bottom: 5px;
+	background: #ffffff;
+	border: 5px solid #ffffff;
+	position: relative;
+	-webkit-box-shadow: 1px 1px 1px 1px #ccc;  
+    -moz-box-shadow: 1px 1px 1px 1px #ccc;  
+    box-shadow: 1px 1px 1px 1px #ccc; 
+}
+
+#gallery img {
+	width: 150px;
+	height: 150px;
+	overflow: hidden;
+}
+
+.flickr-image {
+	display: block;
+	width: 150px;
+	height: 150px;
+	background-color: #ffb00f;
+	text-align: center;
+	font-size: 150%;
+}
+
+.flickr-image:hover img {
+	opacity: 0.5;
+	-webkit-transition: all 300ms ease-out;  
+    -moz-transition: all 300ms ease-out;  
+    -o-transition: all 300ms ease-out;  
+    -ms-transition: all 300ms ease-out;  
+    transition: all 300ms ease-out;
+}
+
+.flickr-image .caption {
+	visibility: hidden;
+	text-align: center;
+	color: white;
+	margin-top: -90px;
+}
+
+.flickr-image:hover .caption {
+	visibility: visible;
+}
+
+#search-term {
+	font-size: 110%;
+	font-family: "Gotham Light", Helvetica, Arial, sans-serif;
+	width: 50%;
+	padding: 6px 6px 6px 10px;
+	color:#bcbcbc;
+	border: 1px solid #d0d0d0;
+	background-color: transparent;
+	/*background-color:#fcfcfc;*/
+}
+
+#search-submit,
+#login-submit {
+	font-size: 110%;
+	font-family: "Gotham Light", Helvetica, Arial, sans-serif;
+	position: relative;
+	padding: 6px 10px 6px 10px;
+	left: -8px;
+	border: none;
+	background: #7da2aa;
+	border: 1px solid #7da2aa;
+	color: #e4f1f9;
+	cursor: pointer;
+}
+
+#username,
+#password {
+	font-size: 110%;
+	font-family: "Gotham Light", Helvetica, Arial, sans-serif;
+	padding: 6px 6px 6px 10px;
+	color:#bcbcbc;
+	border: 1px solid #d0d0d0;
+	background-color: transparent;
+}
+
+#login-box {
+	padding: 200px;
+}
+
+/* Reading story */
+.page {
+	width: 100%;
+	text-align: center;
+}
+
+#cover img, 
+#story-lines {
+	float: relative;
+	width: 80%;
+}
+
+#story-lines {
+	width: 80%;
+	float: relative;
+}
+
+#story-lines p {
+	text-align: left;
+	/*background: #d0d0d0;*/
+	/*width: 70%;*/
+	opacity: 0.5;
+	color: black;
+	/*padding: 30px 10px 30px 70px;*/
+}
