@@ -48,14 +48,28 @@
 		</div>
 		<!-- end of flickr -->
 
-		<div id='newstory'>
-			<div id='response'>
+		<div id='story-cover'>
+		</div>
+
+		<div id='story-title' hidden>
+			<form id='title-form'>
+				<label>Enter a title for the story</label><br>
+				<input id='title' type='text' name='title'>
+				<input type='submit' value='Submit'>
+			</form>
+		</div>
+
+		<div id='story' hidden>
+			<h2>This is where you add your line</h2>
+			<div id='story-lines'>
+				<ul>
+				</ul>
 			</div>
-			<div id='newstoryimage'>
+			<div id='max'>
 			</div>
-			<div id='storylines'>
-			</div>
-			<form id='addline'>
+			<form id='line-form'>
+				<input type='text' name='line'>
+				<input type='submit' value='+ Add Line'>
 			</form>
 		</div>
 
