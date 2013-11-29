@@ -163,7 +163,7 @@ $(document).ready(function(){
 			$("#line-form").fadeOut('slow');
 			console.log('CLIENT has reached the max!');
 		} else if (data.storyLength >= maxLines) {
-			$("#max").text('All done!').fadeIn();
+			// $("#max").text('All done!').fadeIn();
 			$("#line-form").fadeOut('slow');
 		} else {
 			$("#story-lines").append("<li>"+data.line+"</li>");
@@ -185,11 +185,17 @@ $(document).ready(function(){
 			$("#story-lines").append("<li>"+data.line+"</li>");
 			if (lines.length >= maxLines) {
 				$("#line-form").fadeOut();
-				$("#max").text("All done!").fadeIn();
+				socket.emit('lastLine');
+				// $("#max").text("All done!").fadeIn();
 			} else {
 				$("#line-form").fadeIn();
 			}
 		// }
+	});
+
+	socket.on('finish', function() {
+		$("#max").text('All Done!').fadeIn();
+		console.log('CLIENT story is done');
 	});
 
 	// socket.on('storyDone', function() {

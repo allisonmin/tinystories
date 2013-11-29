@@ -48,6 +48,12 @@ exports.init = function(io) {
 			// }
 		});
 
+		socket.on('lastLine', function () {
+			socket.emit('finish');
+			socket.broadcast.emit('finish');
+			console.log('SERVER story done');
+		});
+
 		socket.broadcast.emit('players', { number: currentPlayers });
 
 		socket.on('disconnect', function () {
