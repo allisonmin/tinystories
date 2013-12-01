@@ -4,7 +4,6 @@ $(document).ready(function(){
 		cover = null,
 		largeCover = null,
 		title = null,
-		players = [],
 		lines = [],
 		maxLines = 5; // 5 lines per player
 
@@ -140,7 +139,9 @@ $(document).ready(function(){
 		$("#waiting").fadeOut('slow');
 		$("#story-title").text(data.title).fadeIn();
 		console.log('CLIENT received title from partner');
-		$("#story").fadeIn('slow');
+		// $("#story").fadeIn('slow');
+		$("#lineMessage").fadeIn('slow');
+		$("#line-form").fadeIn('slow');
 	});
 
 	// after submitting line, send to server
@@ -149,10 +150,10 @@ $(document).ready(function(){
 		// console.log('CLIENT there are now '+lines.length+' lines');
 		console.log('CLIENT added this line: '+lines[lines.length - 1]);
 		$("#line-form [name=line]").val('');
-		socket.emit('sendLine', { line: lines[lines.length - 1 ], storyLength: lines.length });
-		// if (lines.length >= maxLines) {
-		// 	$("#max").text("All done!").fadeIn();
-		// }
+		socket.emit('sendLine', { line: lines[lines.length - 1 ], 
+								  storyLength: lines.length, 
+								  user: $("#welcome-user").html().replace(/Welcome, /, "") 
+								});
 		return false;
 	});
 
@@ -163,9 +164,9 @@ $(document).ready(function(){
 			$("#line-form").fadeOut('slow');
 			console.log('CLIENT has reached the max!');
 		} else if (data.storyLength >= maxLines) {
-			// $("#max").text('All done!').fadeIn();
 			$("#line-form").fadeOut('slow');
 		} else {
+			// $("#story-lines li:odd").css('background-color', '#fee5b9');
 			$("#story-lines").append("<li>"+data.line+"</li>");
 			$("#line-form").fadeOut();
 		}
@@ -173,36 +174,21 @@ $(document).ready(function(){
 
 	// show line to other player, transfer turn
 	socket.on('addLineOther', function (data) {
-		// if (data.storyLength === maxLines) {
-		// 	$("#story-lines").append("<li>"+data.line+"</li>");
-		// 	$("#line-form").fadeIn('slow');
-		// 	console.log('CLIENT has reached the max!');
-		// } else if (data.storyLength > maxLines) {
-		// 	$("#max").text('All done!').fadeIn();
-		// 	$("#line-form").fadeOut('slow');
-		// } else {
-			$("#story").fadeIn('slow');
-			$("#story-lines").append("<li>"+data.line+"</li>");
-			if (lines.length >= maxLines) {
-				$("#line-form").fadeOut();
-				socket.emit('lastLine');
-				// $("#max").text("All done!").fadeIn();
-			} else {
-				$("#line-form").fadeIn();
-			}
-		// }
+		$("#story").fadeIn('slow');
+		$("#story-lines").append("<li>"+data.line+"</li>");
+		if (lines.length >= maxLines) {
+			$("#line-form").fadeOut();
+			socket.emit('lastLine');
+		} else {
+			$("#line-form").fadeIn();
+		}
 	});
 
+	// show players that story is finished
 	socket.on('finish', function() {
 		$("#max").text('All Done!').fadeIn();
 		console.log('CLIENT story is done');
 	});
-
-	// socket.on('storyDone', function() {
-	// 	$("#line-form").fadeOut('slow');
-	// 	$("#max").text('All done!').fadeIn();
-	// 	console.log('CLIENT has reached the max!');	
-	// });
 
 	socket.on('message', function (data) {
 		$("#username-title").text(data.message);

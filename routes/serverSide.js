@@ -1,6 +1,8 @@
 var story = require('../models/story.js');
 
-var playerList = {};
+var authors = [];
+var lines = [];
+var title = null;
 var quorum = 2;
 var maxLines = 5;
 
@@ -16,6 +18,10 @@ exports.init = function(io) {
 
 		// Add a player, send waiting signal or flickr form
 		socket.on('addPlayer', function (data) {
+			authors.push(data.username);
+			for (var i=0; i<authors.length; i++) {
+				console.log('SERVER stored users: '+authors[i]);
+			}
 			if (currentPlayers < quorum) {
 				socket.emit('waiting');
 			} else {
@@ -32,20 +38,15 @@ exports.init = function(io) {
 		});
 
 		socket.on('submitTitle', function (data) {
+			title = data.title;
 			socket.broadcast.emit('startStory', { title: data.title });
 			console.log('SERVER: got title');
 		});
 
 		socket.on('sendLine', function (data) {
-			// if (data.storyLength <= maxLines) {
-				socket.emit('addLineCurrent', { line: data.line, storyLength: data.storyLength });
-				socket.broadcast.emit('addLineOther', { line: data.line, storyLength: data.storyLength });
-				console.log('SERVER: got the line');
-			// } else {
-			// 	socket.emit('storyDone');
-			// 	socket.broadcast.emit('storyDone');
-			// 	console.log('SERVER the story is done');
-			// }
+			socket.emit('addLineCurrent', { line: data.line, storyLength: data.storyLength });
+			socket.broadcast.emit('addLineOther', { line: data.line, storyLength: data.storyLength });
+			console.log('SERVER: got the line');
 		});
 
 		socket.on('lastLine', function () {
@@ -53,6 +54,35 @@ exports.init = function(io) {
 			socket.broadcast.emit('finish');
 			console.log('SERVER story done');
 		});
+
+		// update api so that create a new story with
+		// - title
+		// - image
+		function createStory() {
+			$.ajax({
+				url: "/stories",
+				type: "PUT",
+				data: {
+					title: title,
+					author: $("#author").val(),
+					line: $("#line").val()
+				},
+				success: function(data) {
+					$("#response").html(data);
+					$("#title").val('');
+					$("#author").val('');
+					$("#line").val('');
+				}
+			});
+			return false;
+		}
+
+		// update api so that updating story with
+		// - line
+		// - author
+		function addLine() {
+
+		}
 
 		socket.broadcast.emit('players', { number: currentPlayers });
 

@@ -10,23 +10,105 @@
 	</head>
 
 	<body>
+		
 		<div id='decor'></div>
 		<header>
 			<a id='logotext' href='/'>tiny<strong>stories</strong></a>
 		</header>
+		<!-- end of header -->
+
+		<div id='user' hidden>
+			<h2 id='username-title'>Enter Your Nom de Plume</h2>
+			<form id='username-form'>
+				<input class='text-input-flat' type='text' name='username' placeholder='marktwain'>
+				<input class='button-flat' type='submit' value='Submit'>
+			</form>
+		</div>
+
+		<!-- <p> There are currently <span id="numPlayers">no</span> players.</p> -->
+		<h2 id='welcome-user'>Welcome, Allison</h2>
+		<p id='waiting' hidden>Please wait for another player</p>
 		
+		<div id='flickr' hidden>
+			<!-- Flickr Search Bar -->
+			<div id='flickr-search'>
+				<form id='flickr-form'>
+					<h2>Pick a Story Cover</h2><br>
+					<input id='search-term' class='text-input-flat' type='text' name='search'>
+					<input id='search-submit' class='button-flat' type='submit' value='Search'>
+				</form>
+			</div>
+			<!-- end of Flickr Search Bar -->
+
+			<div id='gallery'>
+				<ul>
+				</ul>
+			</div>
+		</div>
+		<!-- end of flickr -->
 		<div class='page'>
-			<div id='cover'>
+			<div id='story-cover'>
+				<img src="http://farm8.static.flickr.com/7071/6856897428_aa2e662662_z.jpg">
 			</div>
 
-			<div id='story-lines'>
-				<h2></h2>
+			<div id='story-title'>
+			<h2>Story Title</h2>
+			<!-- <form id='title-form'>
+				<h2>Enter a Story Title</h2><br>
+				<input class='text-input-flat' id='title' type='text' name='title' placeholder='The Last Leaf'>
+				<input class='button-flat' type='submit' value='Submit'>
+			</form> -->
 			</div>
-		<div>
 
-		<footer>
+			<div id='story'>
+				<h2>This is where you add your line</h2>
+				<div id='story-lines'>
+					<ul>
+						<li>
+							Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vehicula laoreet accumsan. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
+						</li>
+						<li>
+							Donec a ullamcorper nibh. Curabitur iaculis quam vulputate neque congue, nec malesuada libero aliquam.
+						</li>
+						<li>
+							Fusce pharetra, sapien ac venenatis rutrum, velit nulla consequat sapien, non facilisis leo risus sed lorem.
+						</li>
+						<li>
+							Nullam convallis hendrerit faucibus. Proin ac tincidunt turpis. Mauris eleifend tincidunt nunc quis lobortis.
+						</li>
+						<li>
+							Donec in justo suscipit, posuere nunc non, porta massa. Maecenas eget cursus eros, non tincidunt augue. Praesent lobortis neque sapien.
+						</li>
+						<li>
+							Mauris volutpat dolor eu nisl pellentesque pretium. Proin et massa condimentum mauris scelerisque ultricies facilisis eget erat.
+						</li>
+						<li>
+							Suspendisse placerat sagittis interdum. Morbi ac erat venenatis, aliquet tellus sed, vulputate lorem. Mauris eu sem eu ipsum porttitor luctus id a erat.
+						</li>
+						<li>
+							Sed eu eros tincidunt, viverra tellus non, molestie sapien. Nunc at tincidunt lectus. Duis id eleifend sapien, non sagittis ante. Nam sed mi et dolor venenatis dictum.
+						</li>
+						<li>
+							Mauris ultrices at tortor sed facilisis. Ut tincidunt turpis vitae tristique pharetra.
+						</li>
+						<li>
+							Interdum et malesuada fames ac ante ipsum primis in faucibus. Ut tincidunt semper diam non consectetur. Curabitur at est ac nulla ornare aliquam. 
+						</li>
+					</ul>
+				</div>
+				<div id='max'>
+				</div>
+				<form id='line-form'>
+					<textarea class='text-input-flat' name='line'></textarea><br>
+					<input class='button-flat' id='line-submit' type='submit' value='+ Add Line'>
+				</form>
+			</div>
+		</div>
+		<div class='push'></div>
+		
+<!-- 		<footer>
 			<p>&copy; <a href="mailto:amin1@andrew.cmu.edu">Allison Min</a></p>
-		</footer>
+		</footer> -->
 
 	</body>
 </html>

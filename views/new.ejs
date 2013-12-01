@@ -21,22 +21,22 @@
 		<div id='user'>
 			<h2 id='username-title'></h2>
 			<form id='username-form'>
-				<input type='text' name='username' placeholder='marktwain'>
-				<input type='submit' value='Submit'>
+				<input class='text-input-flat' type='text' name='username' placeholder='marktwain'>
+				<input class='button-flat' type='submit' value='Submit'>
 			</form>
 		</div>
 
 		<!-- <p> There are currently <span id="numPlayers">no</span> players.</p> -->
-		<p id='welcome-user'></p>
-		<p id='waiting' hidden>We're waiting for another player</p>
+		<h2 id='welcome-user'></h2>
+		<p id='waiting' hidden>Waiting for another player</p>
 		
 		<div id='flickr' hidden>
 			<!-- Flickr Search Bar -->
 			<div id='flickr-search'>
 				<form id='flickr-form'>
-					<label>Please Choose a Story Cover</label><br>
-					<input id='search-term' type='text' name='search'>
-					<input id='search-submit' type='submit' value='Search'>
+					<h2>Pick a Story Cover</h2><br>
+					<input id='search-term' class='text-input-flat' type='text' name='search'>
+					<input id='search-submit' class='button-flat' type='submit' value='Search'>
 				</form>
 			</div>
 			<!-- end of Flickr Search Bar -->
@@ -53,29 +53,29 @@
 
 		<div id='story-title' hidden>
 			<form id='title-form'>
-				<label>Enter a title for the story</label><br>
-				<input id='title' type='text' name='title'>
-				<input type='submit' value='Submit'>
+				<h2>Enter a Story Title</h2><br>
+				<input id='title' class='text-input-flat' type='text' name='title' placeholder='The Last Leaf'>
+				<input class='button-flat' type='submit' value='Submit'>
 			</form>
 		</div>
 
 		<div id='story' hidden>
-			<h2>This is where you add your line</h2>
+			<h2 id='lineMessage' hidden>This is where you add your lines</h2>
 			<div id='story-lines'>
 				<ul>
 				</ul>
 			</div>
 			<div id='max'>
 			</div>
-			<form id='line-form'>
-				<input type='text' name='line'>
-				<input type='submit' value='+ Add Line'>
+			<form id='line-form' hidden>
+				<textarea class='text-input-flat' type='text' name='line'></textarea>
+				<input class='button-flat' type='submit' value='+ Add Line'>
 			</form>
 		</div>
 
-		<footer>
+		<!-- <footer>
 			<p>&copy; <a href="mailto:amin1@andrew.cmu.edu">Allison Min</a></p>
-		</footer>
+		</footer> -->
 
 	</body>
 </html>
