@@ -1,13 +1,13 @@
 html {
-	height: 100%;
+	height: 120%;
 }
 
 body {
   	margin: 0px 0px 100px;
   	max-width: 100%;
   	height: 100%;
-  	background-image:url('../pw_pattern/pw_pattern.png');
-	background-repeat:repeat;
+  	background-image: url('../pw_pattern/pw_pattern.png');
+	background-repeat: repeat;
   	font: 14px "Gotham Light", Helvetica, Arial, sans-serif;
 }
 
@@ -37,23 +37,6 @@ header {
 	color: #529d93;
 }
 
-.push {
-	position: relative;
-	margin-top: auto;
-	height: 155px;
-}
-
-/*footer {
-	position: relative;
-	height: 155px;
-	text-align: center;
-	width: 100%;
-	padding: 20px;
-	background: #58585B;
-	margin-top: 10px;
-	color: white;
-}*/
-
 a {
 	text-decoration: none;
 	color: white;
@@ -68,7 +51,7 @@ a {
 #user,
 #welcome-user,
 #waiting,
-#story-title,
+/*#story-title,*/
 #max {
 	padding: 20px 0px;
 	text-align: center;
@@ -76,23 +59,48 @@ a {
 
 #story {
 	display: block;
+	/*padding-right: 10px;*/
 	margin-left: auto;
 	margin-right: auto;
-	width: 65%;
-	/*background-color: blue;*/
+	max-width: 100%;
 }
 
-#story-cover {
-	width: 100%;
-	height: 300px;
-	overflow: scroll;
+.right {
+	float: right;
+	width: 50%;
+	/*background-color: purple;*/
+}
+
+.left {
+	float: left;
+	width: 50%;
+	/*background-color: green;*/
+}
+
+.center {
+	margin-right: auto;
+	margin-left: auto;
+	max-width: 100%;
+}
+
+#story-cover,
+#story-cover h1 {
+	/*width: 100%;*/
+	/*height: 300px;*/
+	/*overflow: scroll;*/
+	text-align: center;
+}
+
+#story-cover form {
+	padding-bottom: 20px;
 }
 
 #story-cover img {
 	display: block;
-	width: 100%;
-	margin-left: auto;
+	/*width: 100%;*/
 	margin-right: auto;
+	margin-left: auto;
+	max-width: 100%;
 }
 
 #story h2,
@@ -100,23 +108,29 @@ a {
 	text-align: center;
 }
 
+#story-lines ul {
+	margin: 0;
+	padding: 0;
+	max-width: 90%;
+}
+
 #story-lines li:nth-child(odd) {
 	background-color: #fee5b9;
 }
 
 #story-lines li {
-	display: inline-block;
+	display: block;
 	padding: 10px;
 	margin-top: 5px;
 	margin-bottom: 5px;
 	margin-right: auto;
 	margin-left: auto;
-	width: 95%;
 	background-color: #e2e2e2;
+	max-width: 100%;
 }
 
 #line-form textarea {
-	width: 100%;
+	width: 70%;
 }
 
 #gallery li {
@@ -254,17 +268,3 @@ a {
 	box-shadow: 0px 3px 0px 0px #e29003;
 }
 /* End of Button class */
-
-/*#username,
-#password {
-	font-size: 110%;
-	font-family: "Gotham Light", Helvetica, Arial, sans-serif;
-	padding: 6px 6px 6px 10px;
-	color:#bcbcbc;
-	border: 1px solid #d0d0d0;
-	background-color: transparent;
-}
-
-#login-box {
-	padding: 200px;
-}*/

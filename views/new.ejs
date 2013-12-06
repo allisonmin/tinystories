@@ -18,57 +18,58 @@
 		</header>
 		<!-- end of header -->
 
-		<div id='user'>
+		<div id='message'></div>
+
+		<div id='user' hidden>
 			<h2 id='username-title'></h2>
 			<form id='username-form'>
-				<input class='text-input-flat' type='text' name='username' placeholder='marktwain'>
+				<input class='text-input-flat' type='text' name='username' autofocus='autofocus' placeholder='marktwain123'>
 				<input class='button-flat' type='submit' value='Submit'>
 			</form>
 		</div>
 
 		<!-- <p> There are currently <span id="numPlayers">no</span> players.</p> -->
-		<h2 id='welcome-user'></h2>
+		<h2 id='welcome-user' hidden></h2>
 		<p id='waiting' hidden>Waiting for another player</p>
 		
 		<div id='flickr' hidden>
 			<!-- Flickr Search Bar -->
 			<div id='flickr-search'>
 				<form id='flickr-form'>
-					<h2>Pick a Story Cover</h2><br>
-					<input id='search-term' class='text-input-flat' type='text' name='search'>
+					<h2>Pick an illustration for your story</h2><br>
+					<input id='search-term' class='text-input-flat' type='text' name='search' autofocus='autofocus'>
 					<input id='search-submit' class='button-flat' type='submit' value='Search'>
 				</form>
 			</div>
 			<!-- end of Flickr Search Bar -->
+		</div>
 
-			<div id='gallery'>
-				<ul>
-				</ul>
-			</div>
+		<div id='gallery'>
+			<ul>
+			</ul>
 		</div>
 		<!-- end of flickr -->
 
-		<div id='story-cover'>
+		<div id='story-cover' class='left'>
+			<div id='story-title' hidden>
+				<form id='title-form'>
+					<h2>Enter Your Title</h2><br>
+					<input id='title' class='text-input-flat' type='text' name='title' autofocus='autofocus' placeholder='My Story Title'>
+					<input class='button-flat' type='submit' value='Submit'>
+				</form>
+			</div>
 		</div>
 
-		<div id='story-title' hidden>
-			<form id='title-form'>
-				<h2>Enter a Story Title</h2><br>
-				<input id='title' class='text-input-flat' type='text' name='title' placeholder='The Last Leaf'>
-				<input class='button-flat' type='submit' value='Submit'>
-			</form>
-		</div>
-
-		<div id='story' hidden>
+		<div id='story' class='right' hidden>
 			<h2 id='lineMessage' hidden>This is where you add your lines</h2>
 			<div id='story-lines'>
 				<ul>
 				</ul>
 			</div>
-			<div id='max'>
-			</div>
+			<!-- <div id='max'>
+			</div> -->
 			<form id='line-form' hidden>
-				<textarea class='text-input-flat' type='text' name='line'></textarea>
+				<textarea class='text-input-flat' type='text' name='line' autofocus='autofocus'></textarea>
 				<input class='button-flat' type='submit' value='+ Add Line'>
 			</form>
 		</div>

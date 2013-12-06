@@ -46,6 +46,9 @@ app.get('/authors', api.listAuthors);
 
 var server = http.createServer(app);
 var io = sio.listen(server);
+io.configure('development', function() {
+	io.set('log level', 1);
+});
 server.listen(3000, function(){
 	console.log("Express server listening on port 3000");
 });

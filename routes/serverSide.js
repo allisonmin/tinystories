@@ -3,92 +3,150 @@ var story = require('../models/story.js');
 var authors = [];
 var lines = [];
 var title = null;
+var image = null;
 var quorum = 2;
 var maxLines = 5;
 
+var sessionID = null,
+	openRooms = [],
+	username = null;
+
 exports.init = function(io) {
-	var currentPlayers = 0;
+	// var currentPlayers = 0;
 
   // When a new connection is initiated
 	io.sockets.on('connection', function (socket) {
-		++currentPlayers;
-		socket.emit('players', { number: currentPlayers });
-		socket.emit('players', { id: currentPlayers });
-		socket.emit('message', { message: "Enter your Nom de Plume" });
+		// If there are no rooms to join then start the process of
+		// creating a new room.
+		if (openRooms.length === 0) {
+			console.log('There are no available rooms');
+			console.log('Session ID: ' + socket.id);
+			openRooms.push({ id: socket.id, status: 'waiting' });
+			socket.emit('enterUsername', { message: 'Enter your username', sessionID: socket.id });
+		} else {
+			console.log('There are available rooms');
+		}
 
-		// Add a player, send waiting signal or flickr form
-		socket.on('addPlayer', function (data) {
-			authors.push(data.username);
-			for (var i=0; i<authors.length; i++) {
-				console.log('SERVER stored users: '+authors[i]);
-			}
-			if (currentPlayers < quorum) {
-				socket.emit('waiting');
-			} else {
-				console.log('SERVER sending flickr form');
-				socket.emit('flickrForm');
-				socket.broadcast.emit('waitingChosen');
-			}
-		});
-
-		socket.on('coverChosen', function (data) {
-			socket.broadcast.emit('nameCover', { cover: data.chosen });
-			socket.emit('waitingTitle', { message: 'Wait for your partner to submit story title.'});
-			console.log('SERVER: broadcasting image');
-		});
-
-		socket.on('submitTitle', function (data) {
-			title = data.title;
-			socket.broadcast.emit('startStory', { title: data.title });
-			console.log('SERVER: got title');
-		});
-
-		socket.on('sendLine', function (data) {
-			socket.emit('addLineCurrent', { line: data.line, storyLength: data.storyLength });
-			socket.broadcast.emit('addLineOther', { line: data.line, storyLength: data.storyLength });
-			console.log('SERVER: got the line');
-		});
-
-		socket.on('lastLine', function () {
-			socket.emit('finish');
-			socket.broadcast.emit('finish');
-			console.log('SERVER story done');
-		});
-
-		// update api so that create a new story with
-		// - title
-		// - image
-		function createStory() {
-			$.ajax({
-				url: "/stories",
-				type: "PUT",
-				data: {
-					title: title,
-					author: $("#author").val(),
-					line: $("#line").val()
-				},
-				success: function(data) {
-					$("#response").html(data);
-					$("#title").val('');
-					$("#author").val('');
-					$("#line").val('');
+		// saved username into open rooms array by finding the id
+		socket.on('saveUsername', function (data) {
+			for (var i=0; i<openRooms.length; i++) {
+				if (openRooms[i].id === data.sessionID) {
+					openRooms[i].user = data.username;
+					console.log(JSON.stringify(openRooms[i]));
+					socket.emit('chooseImage', { sessionID: data.sessionID });
 				}
-			});
-			return false;
-		}
+			}
+		});
 
-		// update api so that updating story with
-		// - line
-		// - author
-		function addLine() {
+		socket.on('imagePicked', function (data) {
+			for (var i=0; i<openRooms.length; i++) {
+				if (openRooms[i].id === data.sessionID) {
+					openRooms[i].smallURL = data.smallURL;
+					openRooms[i].largeURL = data.largeURL;
+					console.log(JSON.stringify(openRooms[i]));
+					socket.emit('enterTitle', { sessionID: data.sessionID, largeURL: data.largeURL });
+				}
+			}
+		});
 
-		}
+		socket.on('saveTitle', function (data) {
+			for (var i=0; i<openRooms.length; i++) {
+				if (openRooms[i].id === data.sessionID) {
+					openRooms[i].title = data.title;
+					console.log(JSON.stringify(openRooms[i]));
+					socket.emit('waiting', { title: data.title, sessionID: data.sessionID, message: 'Waiting for another player' });
+				}
+			}
+		});
 
-		socket.broadcast.emit('players', { number: currentPlayers });
+		// var sessionid = socket.id;
+		// console.log("This is the session ID: "+sessionid);
+		// socket.emit('players', { number: currentPlayers });
+		// socket.emit('players', { id: currentPlayers });
+		// socket.emit('message', { message: "Enter your Nom de Plume" });
+
+		// // Add a player, send waiting signal or flickr form
+		// socket.on('addPlayer', function (data) {
+		// 	++currentPlayers;
+		// 	authors.push(data.username);
+		// 	for (var i=0; i<authors.length; i++) {
+		// 		console.log('SERVER stored users: '+authors[i]);
+		// 	}
+		// 	if (currentPlayers < quorum) {
+		// 		socket.emit('waiting');
+		// 	} else {
+		// 		console.log('SERVER sending flickr form');
+		// 		socket.emit('flickrForm');
+		// 		socket.broadcast.emit('waitingChosen');
+		// 	}
+		// });
+
+		// socket.on('coverChosen', function (data) {
+		// 	socket.broadcast.emit('nameCover', { cover: data.chosen });
+		// 	socket.emit('waitingTitle', { message: 'Wait for your partner to submit story title.'});
+		// 	console.log('SERVER: broadcasting image');
+		// });
+
+		// socket.on('submitTitle', function (data) {
+		// 	title = data.title;
+		// 	socket.broadcast.emit('startStory', { title: data.title });
+		// 	console.log('SERVER: got title');
+		// });
+
+		// socket.on('sendLine', function (data) {
+		// 	socket.emit('addLineCurrent', { line: data.line, storyLength: data.storyLength });
+		// 	socket.broadcast.emit('addLineOther', { line: data.line, storyLength: data.storyLength });
+		// 	console.log('SERVER: got the line');
+		// });
+
+		// socket.on('lastLine', function () {
+		// 	socket.emit('finish');
+		// 	socket.broadcast.emit('finish');
+		// 	console.log('SERVER story done');
+		// });
+
+		// // update api so that create a new story with
+		// // - title
+		// // - image
+		// function createStory() {
+		// 	$.ajax({
+		// 		url: "/stories",
+		// 		type: "PUT",
+		// 		data: {
+		// 			title: title,
+		// 			author: $("#author").val(),
+		// 			line: $("#line").val()
+		// 		},
+		// 		success: function(data) {
+		// 			$("#response").html(data);
+		// 			$("#title").val('');
+		// 			$("#author").val('');
+		// 			$("#line").val('');
+		// 		}
+		// 	});
+		// 	return false;
+		// }
+
+		// // update api so that updating story with
+		// // - line
+		// // - author
+		// // function addLine() {
+
+		// // }
+
+		// socket.broadcast.emit('players', { number: currentPlayers });
 
 		socket.on('disconnect', function () {
-			--currentPlayers;
-			socket.broadcast.emit('players', { number: currentPlayers });
+			// sessionID = socket.id;
+			// for (var i=0; i<openRooms.length; i++) {
+			// 	if (openRooms[i].id === sessionID) {
+			// 		openRooms[i].status = 'disconnected';
+			// 		console.log(JSON.stringify(openRooms[i]));
+			// 	}
+			// }
+			// --currentPlayers;
+			// socket.broadcast.emit('players', { number: currentPlayers });
+
 		});
 	});
 }
