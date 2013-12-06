@@ -122,8 +122,11 @@ $(document).ready(function(){
 	// show waiting for another player
 	socket.on('waiting', function (data) {
 		$("#title-form").fadeOut().hide();
-		$("<h1>"+data.title+"</h1>").insertBefore("#story-cover img").fadeIn('slow');
-		$("#message").html("<h2>" + data.message + "</h2>").slideDown();
+		$("#story-cover").fadeOut('slow').hide();
+		$("<h1>"+data.title+"</h1>").insertBefore("#story-cover img").hide();
+		setTimeout(function(){
+	    	$("#message").html("<h1>" + data.message + "</h1>").css('padding','100px').slideDown('slow')
+	    },500);
 	});
 
 

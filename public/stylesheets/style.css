@@ -57,6 +57,10 @@ a {
 	text-align: center;
 }
 
+#message {
+	text-align: center;
+}
+
 #story {
 	display: block;
 	/*padding-right: 10px;*/
