@@ -55,10 +55,11 @@ exports.init = function(io) {
 			} else {
 				room = openRooms.pop();
 				roomID = room.id;
+				room.user2 = username;
 				roomTitle = room.title;
 				roomUsers = [];
 				roomUsers.push(room.user);
-				roomUsers.push(username);
+				roomUsers.push(room.user2);
 				console.log(roomUsers);
 				roomImage = room.largeURL;
 				if (status === "WAITING" && room.status === "READY") {
@@ -71,8 +72,11 @@ exports.init = function(io) {
 					}
 				} else if (status === "WAITING" && room.status === "CREATE") {
 					socket.join(roomID);
+					room.user2 = username;
+					console.log(room.user2);
 					openRooms.push(room); // put the room back
-					console.log('User: '+username+' has joined room: '+roomID);
+					// room.users.push(username);
+					console.log('User: '+username+' has joined room while room is status CREATE: '+roomID);
 					socket.emit('stillWaiting', { message: 'Just a few more seconds', username: username });
 				}
 				// if the status of that room is READY
@@ -119,7 +123,8 @@ exports.init = function(io) {
 					if (io.sockets.clients(openRooms[i].id).length !== 2) {
 						socket.emit('waiting', { title: data.title, sessionID: data.sessionID, message: 'Waiting for another player' });
 					} else if (io.sockets.clients(openRooms[i].id).length === 2) {
-						io.sockets.in(openRooms[i].id).emit('startStory', { title: openRooms[i].title, players: openRooms[i].user, image: openRooms[i].largeURL });
+						io.sockets.in(openRooms[i].id).emit('startStory2', { title: openRooms[i].title, player1: openRooms[i].user, player2: openRooms[i].user2, image: openRooms[i].largeURL });
+						openRooms.splice(i,1); // remove the open room from openRooms array
 					}
 				}
 			}

@@ -174,6 +174,18 @@ $(document).ready(function(){
 		$('#line-form').fadeIn('slow');
 	});
 
+	// start story
+	socket.on('startStory2', function (data) {
+		$('#message').fadeOut('slow').empty();
+		$('#story-cover').addClass('left');
+		$('#story-cover img').remove();
+		$('#story-title').html('<h1>'+data.title+'</h1>').fadeIn('slow');
+		$('#story-title').append('<h3>Written by: '+data.player1+' and '+data.player2+'</h3>').fadeIn('slow');
+		$('#story-cover').append('<img src="'+data.image+'">').fadeIn('slow');
+		$('#story').fadeIn('slow');
+		$('#line-form').fadeIn('slow');
+	});
+
 	//
 	$("#line-form").submit(function() {
 		// lines.push($("#line-form [name=line]").val());
