@@ -27,10 +27,10 @@ $(document).ready(function(){
 	socket.on('waitingForRoom', function (data) {
 		status = data.status;
 		$('#message').html("<h1>" + data.message + "</h1><br>").css('padding-top','100px').slideDown('slow');
-		$('#username-title').text('meanwhile, please enter your username');
-		setTimeout(function(){
-			$('#user').fadeIn()
-		}, 500);
+		// $('#username-title').text('meanwhile, please enter your username');
+		// setTimeout(function(){
+		// 	$('#user').fadeIn()
+		// }, 500);
 	});
 
 	// show still waiting after sending username
@@ -149,6 +149,7 @@ $(document).ready(function(){
 		setTimeout(function(){
 	    	$("#message").html("<h1>" + data.message + "</h1>").css('padding','100px').slideDown('slow')
 	    },500);
+	    socket.emit('creatorReady');
 	});
 
 	// start story
@@ -159,6 +160,15 @@ $(document).ready(function(){
 		$('#story-title').html('<h1>'+data.title+'</h1>').fadeIn('slow');
 		$('#story-title').append('<h3>Written by: '+data.players[0]+' and '+data.players[1]+'</h3>').fadeIn('slow');
 		$('#story-cover').append('<img src="'+data.image+'">').fadeIn('slow');
+	});
+
+	socket.on('roomReady', function (data) {
+		$('#message').fadeOut('slow').empty();
+		$('#message').html("<h1>Found you a room</h1><br>").css('padding-top','100px').slideDown('slow');
+		// $('#username-title').text('Please enter your username');
+		setTimeout(function(){
+			$('#user').fadeIn()
+		}, 500);
 	});
 
 

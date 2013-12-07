@@ -39,8 +39,9 @@ exports.init = function(io) {
 		socket.on('saveUsername', function (data) {
 			status = data.status;
 			username = data.username;
-			console.log('User submited username: '+username);
-			// if the status of the client is CREATE then save the username
+			console.log('User submited username: '+username+' with status: '+status);
+			// if the status of a client is CREATE then save the username
+			// and emit the chooseImage event
 			if (status === "CREATE") {
 				for (var i=0; i<openRooms.length; i++) {
 					if (openRooms[i].id === data.sessionID) {
@@ -49,7 +50,8 @@ exports.init = function(io) {
 						socket.emit('chooseImage', { sessionID: data.sessionID });
 					}
 				}
-			// when the client is waiting to join a room, find a room in openRooms
+			// if the status of a client is WAITING, find a room in openRooms
+			// check if the room is ready 
 			} else if (status === "WAITING") {
 				room = openRooms.pop();
 				roomID = room.id;
@@ -67,7 +69,7 @@ exports.init = function(io) {
 					if (numPlayers === 2) {
 						io.sockets.in(roomID).emit('startStory', { title: roomTitle, players: roomUsers, image: roomImage });
 					}
-				} else {
+				} else if (room.status === "CREATE") {
 					console.log('User: '+username+' is still waiting for available room');
 					socket.emit('stillWaiting', { message: 'Just a few more seconds', username: username });
 				}
@@ -89,6 +91,8 @@ exports.init = function(io) {
 		// saved title into open rooms array by finding the id
 		// set status as READY to join
 		socket.on('saveTitle', function (data) {
+			// set status of client who was creating the room to waiting
+			// status = 'WAITING';
 			for (var i=0; i<openRooms.length; i++) {
 				if (openRooms[i].id === data.sessionID) {
 					openRooms[i].title = data.title;
@@ -100,6 +104,33 @@ exports.init = function(io) {
 				}
 			}
 		});
+
+		// once the creator finishes creating a new room
+		// send the other user the event to enter a username
+		socket.on('creatorReady', function (data) {
+			socket.broadcast.emit('roomReady');
+		})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 		// var sessionid = socket.id;
 		// console.log("This is the session ID: "+sessionid);
