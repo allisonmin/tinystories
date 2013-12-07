@@ -52,16 +52,16 @@ exports.init = function(io) {
 				}
 			// if the status of a client is WAITING, find a room in openRooms
 			// check if the room is ready 
-			} else if (status === "WAITING") {
+			} else {
 				room = openRooms.pop();
 				roomID = room.id;
 				roomTitle = room.title;
+				roomUsers = [];
 				roomUsers.push(room.user);
 				roomUsers.push(username);
 				console.log(roomUsers);
 				roomImage = room.largeURL;
-				// if the status of that room is READY
-				if (room.status === "READY") {
+				if (status === "WAITING" && room.status === "READY") {
 					socket.join(roomID);
 					numPlayers = io.sockets.clients(roomID).length;
 					console.log('User: ' + username + ' joined the room: ' + roomID);
@@ -69,10 +69,26 @@ exports.init = function(io) {
 					if (numPlayers === 2) {
 						io.sockets.in(roomID).emit('startStory', { title: roomTitle, players: roomUsers, image: roomImage });
 					}
-				} else if (room.status === "CREATE") {
-					console.log('User: '+username+' is still waiting for available room');
+				} else if (status === "WAITING" && room.status === "CREATE") {
+					socket.join(roomID);
+					openRooms.push(room); // put the room back
+					console.log('User: '+username+' has joined room: '+roomID);
 					socket.emit('stillWaiting', { message: 'Just a few more seconds', username: username });
 				}
+				// if the status of that room is READY
+				// if (room.status === "READY") {
+				// 	socket.join(roomID);
+				// 	numPlayers = io.sockets.clients(roomID).length;
+				// 	console.log('User: ' + username + ' joined the room: ' + roomID);
+				// 	console.log('There are '+numPlayers+' in the room: '+roomID);
+				// 	if (numPlayers === 2) {
+				// 		io.sockets.in(roomID).emit('startStory', { title: roomTitle, players: roomUsers, image: roomImage });
+				// 	}
+				// } else if (room.status === "CREATE") {
+				// 	openRooms.push(room); // put the room back
+				// 	console.log('User: '+username+' is still waiting for available room');
+				// 	socket.emit('stillWaiting', { message: 'Just a few more seconds', username: username });
+				// }
 			}
 		});
 
@@ -98,18 +114,39 @@ exports.init = function(io) {
 					openRooms[i].title = data.title;
 					openRooms[i].status = 'READY';
 					console.log(JSON.stringify(openRooms[i]));
-					socket.emit('waiting', { title: data.title, sessionID: data.sessionID, message: 'Waiting for another player' });
 					socket.join(openRooms[i].id);
-					console.log('User: ' + username + ' joined the room: ' + openRooms[i].id);
+					console.log('User: ' + username + ' joined the room in saveTitle event: ' + openRooms[i].id);
+					if (io.sockets.clients(openRooms[i].id).length !== 2) {
+						socket.emit('waiting', { title: data.title, sessionID: data.sessionID, message: 'Waiting for another player' });
+					} else if (io.sockets.clients(openRooms[i].id).length === 2) {
+						io.sockets.in(openRooms[i].id).emit('startStory', { title: openRooms[i].title, players: openRooms[i].user, image: openRooms[i].largeURL });
+					}
 				}
 			}
 		});
 
 		// once the creator finishes creating a new room
-		// send the other user the event to enter a username
-		socket.on('creatorReady', function (data) {
-			socket.broadcast.emit('roomReady');
-		})
+		// let a waiting user join the room and send them
+		// the username form
+		// socket.on('creatorReady', function (data) {
+		// 	if (status === "WAITING") {
+		// 		room = openRooms.pop();
+		// 		roomID = room.id;
+		// 		roomTitle = room.title;
+		// 		roomUsers.push(room.user);
+		// 		roomUsers.push(username);
+		// 		console.log(roomUsers);
+		// 		roomImage = room.largeURL;
+
+		// 		if (room.status === "READY") {
+		// 			socket.join(roomID);
+		// 			numPlayers = io.sockets.clients(roomID).length;
+		// 			// console.log('User: ' + username + ' joined the room: ' + roomID);
+		// 			// console.log('There are '+numPlayers+' in the room: '+roomID);
+		// 			socket.broadcast.to(roomID).emit('roomReady');
+		// 		}
+		// 	}// socket.broadcast.emit('roomReady');
+		// });
 
 
 
