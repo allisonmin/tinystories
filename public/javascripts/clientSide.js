@@ -1,5 +1,6 @@
 $(document).ready(function(){
 	var sessionID = null,
+		status = null,
 		username = null,
 		query = null,
 		cover = null,
@@ -17,20 +18,41 @@ $(document).ready(function(){
 			$('#user').fadeIn()
 			}, 500);
 		sessionID = data.sessionID;
+		status = data.status;
 		console.log('Session ID: ' + sessionID);
+		console.log('Status: ' + status);
+	});
+
+	// show waiting for open room when there are available rooms
+	socket.on('waitingForRoom', function (data) {
+		status = data.status;
+		$('#message').html("<h1>" + data.message + "</h1><br>").css('padding-top','100px').slideDown('slow');
+		$('#username-title').text('meanwhile, please enter your username');
+		setTimeout(function(){
+			$('#user').fadeIn()
+		}, 500);
+	});
+
+	// show still waiting after sending username
+	socket.on('stillWaiting', function (data) {
+		$('#message').fadeOut('slow').empty();
+		$('#message').html('<h1>'+data.message+', '+data.username+'</h1><br>').css('padding-top', '100px').fadeIn();
 	});
 
 	// on user form submit, send username and sessionID to server
 	$('#username-form').submit(function(){
 		username = $("#username-form input[name=username]").val();
-		socket.emit('saveUsername', { username: username, sessionID: sessionID });
+		socket.emit('saveUsername', { username: username, sessionID: sessionID, status: status });
+		console.log('User submitted username: ' + username);
+		$('#username-title').slideUp('slow');
+		$('#username-form').slideUp('slow');
 		return false;
 	});
 
 	// show flickr form and hide username form
 	socket.on('chooseImage', function (data) {
-		$('#username-title').slideUp();
-		$('#username-form').slideUp();
+		$('#username-title').slideUp('slow');
+		$('#username-form').slideUp('slow');
 		setTimeout(function(){
 	    	$('#flickr').fadeIn()
 	    },500);
@@ -129,7 +151,15 @@ $(document).ready(function(){
 	    },500);
 	});
 
-
+	// start story
+	socket.on('startStory', function (data) {
+		$('#message').fadeOut('slow').empty();
+		$('#story-cover').addClass('left');
+		$('#story-cover img').remove();
+		$('#story-title').html('<h1>'+data.title+'</h1>').fadeIn('slow');
+		$('#story-title').append('<h3>Written by: '+data.players[0]+' and '+data.players[1]+'</h3>').fadeIn('slow');
+		$('#story-cover').append('<img src="'+data.image+'">').fadeIn('slow');
+	});
 
 
 

@@ -9,7 +9,14 @@ var maxLines = 5;
 
 var sessionID = null,
 	openRooms = [],
-	username = null;
+	username = null,
+	status = null,
+	room = null,
+	roomID = null,
+	numPlayers = 0,
+	roomTitle = null,
+	roomImage = null,
+	roomUsers = [];
 
 exports.init = function(io) {
 	// var currentPlayers = 0;
@@ -21,23 +28,53 @@ exports.init = function(io) {
 		if (openRooms.length === 0) {
 			console.log('There are no available rooms');
 			console.log('Session ID: ' + socket.id);
-			openRooms.push({ id: socket.id, status: 'waiting' });
-			socket.emit('enterUsername', { message: 'Enter your username', sessionID: socket.id });
+			openRooms.push({ id: socket.id, status: 'CREATE' });
+			socket.emit('enterUsername', { message: 'Enter your username', sessionID: socket.id, status: 'CREATE' });
 		} else {
-			console.log('There are available rooms');
+			console.log('There are ' + openRooms.length + ' open rooms');
+			socket.emit('waitingForRoom', { message: 'Waiting for an available room', sessionID: socket.id, status: 'WAITING' });
 		}
 
 		// saved username into open rooms array by finding the id
 		socket.on('saveUsername', function (data) {
-			for (var i=0; i<openRooms.length; i++) {
-				if (openRooms[i].id === data.sessionID) {
-					openRooms[i].user = data.username;
-					console.log(JSON.stringify(openRooms[i]));
-					socket.emit('chooseImage', { sessionID: data.sessionID });
+			status = data.status;
+			username = data.username;
+			console.log('User submited username: '+username);
+			// if the status of the client is CREATE then save the username
+			if (status === "CREATE") {
+				for (var i=0; i<openRooms.length; i++) {
+					if (openRooms[i].id === data.sessionID) {
+						openRooms[i].user = username;
+						console.log(JSON.stringify(openRooms[i]));
+						socket.emit('chooseImage', { sessionID: data.sessionID });
+					}
+				}
+			// when the client is waiting to join a room, find a room in openRooms
+			} else if (status === "WAITING") {
+				room = openRooms.pop();
+				roomID = room.id;
+				roomTitle = room.title;
+				roomUsers.push(room.user);
+				roomUsers.push(username);
+				console.log(roomUsers);
+				roomImage = room.largeURL;
+				// if the status of that room is READY
+				if (room.status === "READY") {
+					socket.join(roomID);
+					numPlayers = io.sockets.clients(roomID).length;
+					console.log('User: ' + username + ' joined the room: ' + roomID);
+					console.log('There are '+numPlayers+' in the room: '+roomID);
+					if (numPlayers === 2) {
+						io.sockets.in(roomID).emit('startStory', { title: roomTitle, players: roomUsers, image: roomImage });
+					}
+				} else {
+					console.log('User: '+username+' is still waiting for available room');
+					socket.emit('stillWaiting', { message: 'Just a few more seconds', username: username });
 				}
 			}
 		});
 
+		// saved image into open rooms array by finding the id
 		socket.on('imagePicked', function (data) {
 			for (var i=0; i<openRooms.length; i++) {
 				if (openRooms[i].id === data.sessionID) {
@@ -49,12 +86,17 @@ exports.init = function(io) {
 			}
 		});
 
+		// saved title into open rooms array by finding the id
+		// set status as READY to join
 		socket.on('saveTitle', function (data) {
 			for (var i=0; i<openRooms.length; i++) {
 				if (openRooms[i].id === data.sessionID) {
 					openRooms[i].title = data.title;
+					openRooms[i].status = 'READY';
 					console.log(JSON.stringify(openRooms[i]));
 					socket.emit('waiting', { title: data.title, sessionID: data.sessionID, message: 'Waiting for another player' });
+					socket.join(openRooms[i].id);
+					console.log('User: ' + username + ' joined the room: ' + openRooms[i].id);
 				}
 			}
 		});
@@ -137,13 +179,16 @@ exports.init = function(io) {
 		// socket.broadcast.emit('players', { number: currentPlayers });
 
 		socket.on('disconnect', function () {
-			// sessionID = socket.id;
-			// for (var i=0; i<openRooms.length; i++) {
-			// 	if (openRooms[i].id === sessionID) {
-			// 		openRooms[i].status = 'disconnected';
-			// 		console.log(JSON.stringify(openRooms[i]));
-			// 	}
-			// }
+			sessionID = socket.id;
+			console.log('There are ' + openRooms.length + ' open rooms');
+			for (var i=0; i<openRooms.length; i++) {
+				if (openRooms[i].id === sessionID) {
+					openRooms.splice(i,1);
+					console.log('There are now ' + openRooms.length + ' open rooms');
+					// openRooms[i].status = 'disconnected';
+					// console.log(JSON.stringify(openRooms[i]));
+				}
+			}
 			// --currentPlayers;
 			// socket.broadcast.emit('players', { number: currentPlayers });
 
