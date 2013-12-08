@@ -136,7 +136,19 @@ exports.init = function(io) {
 
 		socket.on('sendLine', function (data) {
 			var currentUser = data.user;
+			lines.push(data.line);
 			console.log('Server receievd line: '+data.line+' from '+data.user);
+			console.log(lines);
+
+			// if (lines.length < 10) {
+			// 	// do the regular stuff
+			// 	if (lines.length === 8 || lines.length === 9) {
+			// 		// send extra message that this is your last line to both players
+			// 	}
+			// } else {
+			// 	// send the last line and story finished event
+			// }
+
 			// Send the line to all users in the room
 			io.sockets.in(data.id).emit('showLine', { line: data.line, id: data.id, currentUser: currentUser });
 			// Switch current user to the other user
@@ -148,28 +160,6 @@ exports.init = function(io) {
 			}
 		});
 
-		// once the creator finishes creating a new room
-		// let a waiting user join the room and send them
-		// the username form
-		// socket.on('creatorReady', function (data) {
-		// 	if (status === "WAITING") {
-		// 		room = openRooms.pop();
-		// 		roomID = room.id;
-		// 		roomTitle = room.title;
-		// 		roomUsers.push(room.user);
-		// 		roomUsers.push(username);
-		// 		console.log(roomUsers);
-		// 		roomImage = room.largeURL;
-
-		// 		if (room.status === "READY") {
-		// 			socket.join(roomID);
-		// 			numPlayers = io.sockets.clients(roomID).length;
-		// 			// console.log('User: ' + username + ' joined the room: ' + roomID);
-		// 			// console.log('There are '+numPlayers+' in the room: '+roomID);
-		// 			socket.broadcast.to(roomID).emit('roomReady');
-		// 		}
-		// 	}// socket.broadcast.emit('roomReady');
-		// });
 
 
 

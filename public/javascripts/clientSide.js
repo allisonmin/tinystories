@@ -42,10 +42,11 @@ $(document).ready(function(){
 	// On user form submit, send username and sessionID to server
 	$('#username-form').submit(function(){
 		username = $("#username-form input[name=username]").val();
-		socket.emit('saveUsername', { username: username, sessionID: sessionID, status: status });
-		console.log('User submitted username: ' + username);
 		$('#username-title').slideUp('slow');
 		$('#username-form').slideUp('slow');
+		socket.emit('saveUsername', { username: username, sessionID: sessionID, status: status });
+		console.log('User submitted username: ' + username);
+		$("#username-form input[name=username]").val('');
 		return false;
 	});
 
@@ -132,15 +133,16 @@ $(document).ready(function(){
 	// On title form submit, send title to server
 	$("#title-form").submit(function() {
 		title = $("#title-form input[name=title]").val();
+		$("#title-form").fadeOut('slow').hide();
+		$("#story-cover").fadeOut('slow').hide();
 		console.log("CLIENT submitting title: "+title);
 		socket.emit('saveTitle', { title: title, sessionID: sessionID, username: username })
+		$("#title-form input[name=title]").val('');
 		return false;
 	});
 
 	// Show waiting for another player message
 	socket.on('waiting', function (data) {
-		$("#title-form").fadeOut().hide();
-		$("#story-cover").fadeOut('slow').hide();
 		$("<h1>"+data.title+"</h1>").insertBefore("#story-cover img").hide();
 		setTimeout(function(){
 	    	$("#message").html("<h1>" + data.message + "</h1>").css('padding','100px').slideDown('slow')
