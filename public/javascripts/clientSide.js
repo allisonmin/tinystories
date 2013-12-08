@@ -137,7 +137,7 @@ $(document).ready(function(){
 	$("#title-form").submit(function() {
 		title = $("#title-form input[name=title]").val();
 		console.log("CLIENT submitting title: "+title);
-		socket.emit('saveTitle', { title: title, sessionID: sessionID })
+		socket.emit('saveTitle', { title: title, sessionID: sessionID, username: username })
 		return false;
 	});
 
@@ -149,21 +149,11 @@ $(document).ready(function(){
 		setTimeout(function(){
 	    	$("#message").html("<h1>" + data.message + "</h1>").css('padding','100px').slideDown('slow')
 	    },500);
-	    // socket.emit('creatorReady');
 	});
-
-	// show username form once other player finishes the room
-	// socket.on('roomReady', function (data) {
-	// 	$('#message').fadeOut('slow').empty();
-	// 	$('#message').html("<h1>Found you a room</h1><br>").css('padding-top','100px').slideDown('slow');
-	// 	// $('#username-title').text('Please enter your username');
-	// 	setTimeout(function(){
-	// 		$('#user').fadeIn()
-	// 	}, 500);
-	// });
 
 	// start story
 	socket.on('startStory', function (data) {
+		sessionID = data.id;
 		$('#message').fadeOut('slow').empty();
 		$('#story-cover').addClass('left');
 		$('#story-cover img').remove();
@@ -171,11 +161,19 @@ $(document).ready(function(){
 		$('#story-title').append('<h3>Written by: '+data.players[0]+' and '+data.players[1]+'</h3>').fadeIn('slow');
 		$('#story-cover').append('<img src="'+data.image+'">').fadeIn('slow');
 		$('#story').fadeIn('slow');
-		$('#line-form').fadeIn('slow');
+		$("<h4>The world is made of tiny stories so let's add yours. This is where you'll add lines to your story. Remember, you each get five lines so make it count :)</h4>")
+			.insertBefore("#line-form").fadeIn('slow');
+		setTimeout(function(){
+			$("h4").fadeOut('slow')
+		},8000);
+		$("#turn-message").html("<h2>"+data.currentUser+" is adding a line</h2>").fadeIn('slow');
+		// $("<h2>"+data.currentUser+" is adding a line</h2>").insertBefore("#story-lines").fadeIn('slow');
+		// $('#line-form').fadeIn('slow');
 	});
 
-	// start story
+	// start story2
 	socket.on('startStory2', function (data) {
+		sessionID = data.id;
 		$('#message').fadeOut('slow').empty();
 		$('#story-cover').addClass('left');
 		$('#story-cover img').remove();
@@ -183,32 +181,37 @@ $(document).ready(function(){
 		$('#story-title').append('<h3>Written by: '+data.player1+' and '+data.player2+'</h3>').fadeIn('slow');
 		$('#story-cover').append('<img src="'+data.image+'">').fadeIn('slow');
 		$('#story').fadeIn('slow');
-		$('#line-form').fadeIn('slow');
+		$("<h4>The world is made of tiny stories so let's add yours. This is where you'll add lines to your story. Remember, you each get five lines so make it count :)</h4>")
+			.insertBefore("#line-form").fadeIn('slow');
+		setTimeout(function(){
+			$("h4").fadeOut('slow')
+		},8000);
+		$("#turn-message").html("<h2>"+data.currentUser+" is adding a line</h2>").fadeIn('slow');
 	});
 
-	//
+	// user's turn to add line
+	socket.on('userTurn', function (data) {
+		$("#turn-message").html("<h2>Your turn</h2>").fadeIn('slow');
+		$("#line-form").fadeIn('slow');
+	});
+
+	// On line submit, send line to server
 	$("#line-form").submit(function() {
-		// lines.push($("#line-form [name=line]").val());
-		// // console.log('CLIENT there are now '+lines.length+' lines');
-		// console.log('CLIENT added this line: '+lines[lines.length - 1]);
-		// $("#line-form [name=line]").val('');
-		// socket.emit('sendLine', { line: lines[lines.length - 1 ], 
-		// 						  storyLength: lines.length, 
-		// 						  user: $("#welcome-user").html().replace(/Welcome, /, "") 
-		// 						});
+		$("#turn-message").fadeOut('slow');
+		$("#line-form").fadeOut('slow');
+		socket.emit('sendLine', { line: $('#line-form [name=line]').val(), user: username, id: sessionID });
+		console.log(username+' sent this line to the server: '+ $('#line-form [name=line]').val());
+		$("#line-form [name=line]").val('');
+		$("#turn-message").html("<h2>Think about your next line</h2>").fadeIn('slow');
 		return false;
 	});
 
+	socket.on('showLine', function (data) {
+		$("#story-lines").append("<li>"+data.line+"</li>");
+		$("#line-form").fadeOut('slow');
+	});
 
-
-
-
-
-
-
-
-
-
+	
 	// // submit username and adds player on server side
 	// socket.on('connect', function() {
 	// 	$("#username-form")

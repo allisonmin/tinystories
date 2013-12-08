@@ -28,10 +28,13 @@ exports.init = function(io) {
 		if (openRooms.length === 0) {
 			console.log('There are no available rooms');
 			console.log('Session ID: ' + socket.id);
+			// Add a new room to the list
 			openRooms.push({ id: socket.id, status: 'CREATE' });
+			// Send the username form
 			socket.emit('enterUsername', { message: 'Enter your username', sessionID: socket.id, status: 'CREATE' });
 		} else {
 			console.log('There are ' + openRooms.length + ' open rooms');
+			// Send the other player waiting message
 			socket.emit('waitingForRoom', { message: 'Waiting for an available room', sessionID: socket.id, status: 'WAITING' });
 		}
 
@@ -63,36 +66,29 @@ exports.init = function(io) {
 				console.log(roomUsers);
 				roomImage = room.largeURL;
 				if (status === "WAITING" && room.status === "READY") {
+					// Join the room
 					socket.join(roomID);
+					// Find the number of players in the room
 					numPlayers = io.sockets.clients(roomID).length;
 					console.log('User: ' + username + ' joined the room: ' + roomID);
 					console.log('There are '+numPlayers+' in the room: '+roomID);
+					// When there are 2 players, start the story
 					if (numPlayers === 2) {
-						io.sockets.in(roomID).emit('startStory', { title: roomTitle, players: roomUsers, image: roomImage });
+						io.sockets.in(roomID).emit('startStory', { title: roomTitle, players: roomUsers, image: roomImage, id: roomID });
+						socket.broadcast.to(roomID).emit('userTurn', { id: roomID, currentUser: roomUsers[0] });
 					}
 				} else if (status === "WAITING" && room.status === "CREATE") {
+					// Join the room
 					socket.join(roomID);
+					// Save user2's username
 					room.user2 = username;
 					console.log(room.user2);
-					openRooms.push(room); // put the room back
-					// room.users.push(username);
+					// Add the room back to the list
+					openRooms.push(room);
 					console.log('User: '+username+' has joined room while room is status CREATE: '+roomID);
-					socket.emit('stillWaiting', { message: 'Just a few more seconds', username: username });
+					// Send user2 waiting message
+					socket.emit('stillWaiting', { message: 'Just a few more moments', username: username });
 				}
-				// if the status of that room is READY
-				// if (room.status === "READY") {
-				// 	socket.join(roomID);
-				// 	numPlayers = io.sockets.clients(roomID).length;
-				// 	console.log('User: ' + username + ' joined the room: ' + roomID);
-				// 	console.log('There are '+numPlayers+' in the room: '+roomID);
-				// 	if (numPlayers === 2) {
-				// 		io.sockets.in(roomID).emit('startStory', { title: roomTitle, players: roomUsers, image: roomImage });
-				// 	}
-				// } else if (room.status === "CREATE") {
-				// 	openRooms.push(room); // put the room back
-				// 	console.log('User: '+username+' is still waiting for available room');
-				// 	socket.emit('stillWaiting', { message: 'Just a few more seconds', username: username });
-				// }
 			}
 		});
 
@@ -100,9 +96,11 @@ exports.init = function(io) {
 		socket.on('imagePicked', function (data) {
 			for (var i=0; i<openRooms.length; i++) {
 				if (openRooms[i].id === data.sessionID) {
+					// Set the small url and large url
 					openRooms[i].smallURL = data.smallURL;
 					openRooms[i].largeURL = data.largeURL;
 					console.log(JSON.stringify(openRooms[i]));
+					// Send user the title form event
 					socket.emit('enterTitle', { sessionID: data.sessionID, largeURL: data.largeURL });
 				}
 			}
@@ -111,21 +109,41 @@ exports.init = function(io) {
 		// saved title into open rooms array by finding the id
 		// set status as READY to join
 		socket.on('saveTitle', function (data) {
-			// set status of client who was creating the room to waiting
-			// status = 'WAITING';
+			username = data.username;
 			for (var i=0; i<openRooms.length; i++) {
 				if (openRooms[i].id === data.sessionID) {
 					openRooms[i].title = data.title;
 					openRooms[i].status = 'READY';
 					console.log(JSON.stringify(openRooms[i]));
+					// Join the room
 					socket.join(openRooms[i].id);
 					console.log('User: ' + username + ' joined the room in saveTitle event: ' + openRooms[i].id);
 					if (io.sockets.clients(openRooms[i].id).length !== 2) {
+						// Send user waiting message when not enough players
 						socket.emit('waiting', { title: data.title, sessionID: data.sessionID, message: 'Waiting for another player' });
 					} else if (io.sockets.clients(openRooms[i].id).length === 2) {
-						io.sockets.in(openRooms[i].id).emit('startStory2', { title: openRooms[i].title, player1: openRooms[i].user, player2: openRooms[i].user2, image: openRooms[i].largeURL });
-						openRooms.splice(i,1); // remove the open room from openRooms array
+						// Start the story for this room
+						roomUsers[0] = username;
+						console.log('Users in the room are: '+roomUsers);
+						io.sockets.in(openRooms[i].id).emit('startStory2', { title: openRooms[i].title, player1: openRooms[i].user, player2: openRooms[i].user2, image: openRooms[i].largeURL, id: openRooms[i].id, currentUser: roomUsers[1] });
+						socket.broadcast.to(openRooms[i].id).emit('userTurn', { id: openRooms[i].id, currentUser: roomUsers[1] });
+						// Remove the room from openRooms array
+						openRooms.splice(i,1); 
 					}
+				}
+			}
+		});
+
+		socket.on('sendLine', function (data) {
+			var currentUser = data.user;
+			console.log('Server receievd line: '+data.line+' from '+data.user);
+			// Send the line to all users in the room
+			io.sockets.in(data.id).emit('showLine', { line: data.line, id: data.id, currentUser: currentUser });
+			// Switch current user to the other user
+			for (var i=0; i<roomUsers.length; i++) {
+				if (currentUser !== roomUsers[i]) {
+					currentUser = roomUsers[i];
+					socket.broadcast.to(data.id).emit('userTurn', { id: data.id, currentUser: currentUser });
 				}
 			}
 		});
@@ -258,13 +276,9 @@ exports.init = function(io) {
 				if (openRooms[i].id === sessionID) {
 					openRooms.splice(i,1);
 					console.log('There are now ' + openRooms.length + ' open rooms');
-					// openRooms[i].status = 'disconnected';
-					// console.log(JSON.stringify(openRooms[i]));
 				}
 			}
-			// --currentPlayers;
-			// socket.broadcast.emit('players', { number: currentPlayers });
-
 		});
+
 	});
 }
