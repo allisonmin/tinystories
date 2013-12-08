@@ -11,7 +11,7 @@ $(document).ready(function(){
 
 	var socket = io.connect('/');
 
-	// show username form
+	// Show username form
 	socket.on('enterUsername', function (data) {
 		$('#username-title').text(data.message);
 		setTimeout(function(){
@@ -23,7 +23,7 @@ $(document).ready(function(){
 		console.log('Status: ' + status);
 	});
 
-	// show waiting for open room when there are available rooms
+	// Show waiting for open rooms and username form
 	socket.on('waitingForRoom', function (data) {
 		status = data.status;
 		$('#message').html("<h1>" + data.message + "</h1><br>").css('padding-top','100px').slideDown('slow');
@@ -33,13 +33,13 @@ $(document).ready(function(){
 		}, 500);
 	});
 
-	// show still waiting after sending username
+	// Show waiting message after sending username
 	socket.on('stillWaiting', function (data) {
 		$('#message').fadeOut('slow').empty();
 		$('#message').html('<h1>'+data.message+', '+data.username+'</h1><br>').css('padding-top', '100px').fadeIn();
 	});
 
-	// on user form submit, send username and sessionID to server
+	// On user form submit, send username and sessionID to server
 	$('#username-form').submit(function(){
 		username = $("#username-form input[name=username]").val();
 		socket.emit('saveUsername', { username: username, sessionID: sessionID, status: status });
@@ -49,7 +49,7 @@ $(document).ready(function(){
 		return false;
 	});
 
-	// show flickr form and hide username form
+	// Show flickr form and hide username form
 	socket.on('chooseImage', function (data) {
 		$('#username-title').slideUp('slow');
 		$('#username-form').slideUp('slow');
@@ -61,7 +61,7 @@ $(document).ready(function(){
 	    },500);
 	});
 
-	// on flickr form submit, call flickr ajax request
+	// On flickr form submit, call flickr AJAX request
 	$("#flickr-form").submit(function() {
 		query = $("#flickr-form input[name=search]").val();
 		console.log("CLIENT submitting tag: "+query);
@@ -69,7 +69,7 @@ $(document).ready(function(){
 		return false;
 	});
 
-	// flickr ajax request adds images to the gallery 
+	// Flickr AJAX request adds images to the gallery 
 	function getImages(query) {
 		$("#gallery li").fadeOut('slow').empty();
 		var key = "0021bb748b9d7a9088b17356d94f6ded";
@@ -108,8 +108,7 @@ $(document).ready(function(){
 		return false;
 	}
 
-	// on click for an image, replace current image url with the large image url
-	// then send to server
+	// On click for an image, send smallURL and largeURL to server
 	$(document).on( "click", "img.flickr", function() {
 		cover = $(this).attr('src');
 		largeCover = cover.replace(/_q/, "_z"); // get the larger image
@@ -120,20 +119,17 @@ $(document).ready(function(){
 		console.log('Large url: ' + largeCover);
 	});
 
-	// show title form and image chosen
+	// Show title form and image chosen
 	socket.on('enterTitle', function (data) {
-		// first hide everything from previous event
 		$("#flickr").slideUp();
 		$("#gallery ul").fadeOut('slow').empty();
 		$("#story-cover img").remove();
-		// center image and form because no player2
-		// slide to left when player2 arrives
 		$("#story-cover").removeClass('left');
 	    $('#story-title').fadeIn('slow');
 		$("#story-cover").append("<img src='"+data.largeURL+"'>").fadeIn('slow');
 	});
 
-	// on title form submit, send title to server
+	// On title form submit, send title to server
 	$("#title-form").submit(function() {
 		title = $("#title-form input[name=title]").val();
 		console.log("CLIENT submitting title: "+title);
@@ -141,7 +137,7 @@ $(document).ready(function(){
 		return false;
 	});
 
-	// show waiting for another player
+	// Show waiting for another player message
 	socket.on('waiting', function (data) {
 		$("#title-form").fadeOut().hide();
 		$("#story-cover").fadeOut('slow').hide();
@@ -151,7 +147,7 @@ $(document).ready(function(){
 	    },500);
 	});
 
-	// start story
+	// Start the story
 	socket.on('startStory', function (data) {
 		sessionID = data.id;
 		$('#message').fadeOut('slow').empty();
@@ -167,11 +163,9 @@ $(document).ready(function(){
 			$("h4").fadeOut('slow')
 		},8000);
 		$("#turn-message").html("<h2>"+data.currentUser+" is adding a line</h2>").fadeIn('slow');
-		// $("<h2>"+data.currentUser+" is adding a line</h2>").insertBefore("#story-lines").fadeIn('slow');
-		// $('#line-form').fadeIn('slow');
 	});
 
-	// start story2
+	// Start the story (merge this with the event above)
 	socket.on('startStory2', function (data) {
 		sessionID = data.id;
 		$('#message').fadeOut('slow').empty();
@@ -189,7 +183,7 @@ $(document).ready(function(){
 		$("#turn-message").html("<h2>"+data.currentUser+" is adding a line</h2>").fadeIn('slow');
 	});
 
-	// user's turn to add line
+	// Notify user their turn
 	socket.on('userTurn', function (data) {
 		$("#turn-message").html("<h2>Your turn</h2>").fadeIn('slow');
 		$("#line-form").fadeIn('slow');
@@ -206,6 +200,7 @@ $(document).ready(function(){
 		return false;
 	});
 
+	// Add new line to story
 	socket.on('showLine', function (data) {
 		$("#story-lines").append("<li>"+data.line+"</li>");
 		$("#line-form").fadeOut('slow');
