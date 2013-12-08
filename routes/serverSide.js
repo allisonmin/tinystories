@@ -133,132 +133,31 @@ exports.init = function(io) {
 				}
 			}
 		});
-
+		
+		// Send added line to the room
 		socket.on('sendLine', function (data) {
 			var currentUser = data.user;
 			lines.push(data.line);
 			console.log('Server receievd line: '+data.line+' from '+data.user);
 			console.log(lines);
 
-			// if (lines.length < 10) {
-			// 	// do the regular stuff
-			// 	if (lines.length === 8 || lines.length === 9) {
-			// 		// send extra message that this is your last line to both players
-			// 	}
-			// } else {
-			// 	// send the last line and story finished event
-			// }
-
-			// Send the line to all users in the room
-			io.sockets.in(data.id).emit('showLine', { line: data.line, id: data.id, currentUser: currentUser });
-			// Switch current user to the other user
-			for (var i=0; i<roomUsers.length; i++) {
-				if (currentUser !== roomUsers[i]) {
-					currentUser = roomUsers[i];
-					socket.broadcast.to(data.id).emit('userTurn', { id: data.id, currentUser: currentUser });
+			if (lines.length < 10) {
+				io.sockets.in(data.id).emit('showLine', { line: data.line, id: data.id, currentUser: currentUser, totalLines: lines.length });
+				// Switch current user to the other user
+				for (var i=0; i<roomUsers.length; i++) {
+					if (currentUser !== roomUsers[i]) {
+						currentUser = roomUsers[i];
+						socket.broadcast.to(data.id).emit('userTurn', { id: data.id, currentUser: currentUser });
+					}
 				}
+			} else {
+				// send the last line and story finished event
+				io.sockets.in(data.id).emit('storyFinished', { line: data.line, id: data.id, currentUser: currentUser, message: "The End" });
+				console.log('Server sending finished story event');
 			}
 		});
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		// var sessionid = socket.id;
-		// console.log("This is the session ID: "+sessionid);
-		// socket.emit('players', { number: currentPlayers });
-		// socket.emit('players', { id: currentPlayers });
-		// socket.emit('message', { message: "Enter your Nom de Plume" });
-
-		// // Add a player, send waiting signal or flickr form
-		// socket.on('addPlayer', function (data) {
-		// 	++currentPlayers;
-		// 	authors.push(data.username);
-		// 	for (var i=0; i<authors.length; i++) {
-		// 		console.log('SERVER stored users: '+authors[i]);
-		// 	}
-		// 	if (currentPlayers < quorum) {
-		// 		socket.emit('waiting');
-		// 	} else {
-		// 		console.log('SERVER sending flickr form');
-		// 		socket.emit('flickrForm');
-		// 		socket.broadcast.emit('waitingChosen');
-		// 	}
-		// });
-
-		// socket.on('coverChosen', function (data) {
-		// 	socket.broadcast.emit('nameCover', { cover: data.chosen });
-		// 	socket.emit('waitingTitle', { message: 'Wait for your partner to submit story title.'});
-		// 	console.log('SERVER: broadcasting image');
-		// });
-
-		// socket.on('submitTitle', function (data) {
-		// 	title = data.title;
-		// 	socket.broadcast.emit('startStory', { title: data.title });
-		// 	console.log('SERVER: got title');
-		// });
-
-		// socket.on('sendLine', function (data) {
-		// 	socket.emit('addLineCurrent', { line: data.line, storyLength: data.storyLength });
-		// 	socket.broadcast.emit('addLineOther', { line: data.line, storyLength: data.storyLength });
-		// 	console.log('SERVER: got the line');
-		// });
-
-		// socket.on('lastLine', function () {
-		// 	socket.emit('finish');
-		// 	socket.broadcast.emit('finish');
-		// 	console.log('SERVER story done');
-		// });
-
-		// // update api so that create a new story with
-		// // - title
-		// // - image
-		// function createStory() {
-		// 	$.ajax({
-		// 		url: "/stories",
-		// 		type: "PUT",
-		// 		data: {
-		// 			title: title,
-		// 			author: $("#author").val(),
-		// 			line: $("#line").val()
-		// 		},
-		// 		success: function(data) {
-		// 			$("#response").html(data);
-		// 			$("#title").val('');
-		// 			$("#author").val('');
-		// 			$("#line").val('');
-		// 		}
-		// 	});
-		// 	return false;
-		// }
-
-		// // update api so that updating story with
-		// // - line
-		// // - author
-		// // function addLine() {
-
-		// // }
-
-		// socket.broadcast.emit('players', { number: currentPlayers });
-
+		// When a user disconnects, remove any rooms associated with user
 		socket.on('disconnect', function () {
 			sessionID = socket.id;
 			console.log('There are ' + openRooms.length + ' open rooms');
@@ -269,6 +168,5 @@ exports.init = function(io) {
 				}
 			}
 		});
-
 	});
 }
